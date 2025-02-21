@@ -1,0 +1,67 @@
+name: Java CI with Gradle
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 11
+        uses: actions/setup-java@v4
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Validate gradle wrapper
+        run: |
+          ./gradlew wrapper --gradle-version 8.2.1 --distribution-type all
+          
+      - name: Check SUT file
+        run: |
+          if [ ! -f ./artifacts/app-replan-delivery.jar ]; then
+            echo "❌ SUT file not found!"
+            exit 1
+          fi
+
+      - name: Port check
+        run: |
+          if lsof -i :9999; then
+            echo "⚠️  Port 9999 is busy!"
+            exit 1
+          fi
+
+      - name: Start SUT
+        run: |
+          java -jar ./artifacts/app-replan-delivery.jar > sut.log 2>&1 &
+          echo $! > pid.file
+          sleep 5
+          
+      - name: Health check
+        run: |
+          for i in {1..10}; do
+            if curl -s http://localhost:9999 > /dev/null; then
+              echo "✅ SUT started!"
+              exit 0
+            fi
+            sleep 3
+          done
+          echo "❌ SUT health check failed"
+          exit 1
+
+      - name: Run tests
+        run: ./gradlew test -Dselenide.headless=true
+
+      - name: Upload reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports
+          path: |
+            build/reports/tests/test
+            build/test-results/test
