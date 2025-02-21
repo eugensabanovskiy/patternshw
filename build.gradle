@@ -22,5 +22,10 @@ dependencies {
 
 test {
     useJUnitPlatform()
-    systemProperty 'selenide.headless', System.getProperty('selenide.headless')
+    systemProperties = [
+        'selenide.headless': 'true',
+        'selenide.browser': 'chrome',
+        'selenide.pageLoadStrategy': 'eager',
+        'selenide.timeout': '15000'
+    ]
 }

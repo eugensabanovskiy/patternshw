@@ -120,17 +120,28 @@ class DeliveryTest {
         var user = DataGenerator.Registration.generateUser("ru");
         String meetingDate = DataGenerator.generateDate(4);
 
+        // Заполнение формы без чекбокса
+        fillFormWithoutAgreement(user, meetingDate);
+    
+        // Диагностика
+        System.out.println("Страница ДО отправки: " + WebDriverRunner.source());
+        $("button.button").click();
+        System.out.println("Страница ПОСЛЕ отправки: " + WebDriverRunner.source());
+
+        // Проверка ошибки с новым селектором
+        $("[data-test-id=agreement].input_invalid")
+                .shouldBe(Condition.visible, Duration.ofSeconds(15))
+                .$(".checkbox__text")
+                .shouldHave(Condition.exactText("Я соглашаюсь с условиями обработки и использования моих персональных данных"));
+        }
+
+        private void fillFormWithoutAgreement(UserInfo user, String date) {
         $("[data-test-id=city] input").setValue(user.getCity());
         $("[data-test-id=date] input").sendKeys(Keys.chord(Keys.CONTROL, "a"), Keys.DELETE);
-        $("[data-test-id=date] input").setValue(meetingDate);
+        $("[data-test-id=date] input").setValue(date);
         $("[data-test-id=name] input").setValue(user.getName());
         $("[data-test-id=phone] input").setValue(user.getPhone());
-        $("button.button").click();
-
-        $("[data-test-id=agreement].input_invalid .checkbox__text")
-                .shouldHave(Condition.text("Я соглашаюсь с условиями обработки и использования моих персональных данных"), 
-                Duration.ofSeconds(10));
-    }
+        }
 
     @Test
     @DisplayName("Ошибка при вводе невалидной даты (менее 3 дней вперед)")
