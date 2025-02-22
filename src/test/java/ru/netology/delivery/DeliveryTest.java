@@ -27,9 +27,9 @@ class DeliveryTest {
         var daysToAddForSecondMeeting = 7;
         var secondMeetingDate = DataGenerator.generateDate(daysToAddForSecondMeeting);
 
-        // Первая запись
+       
         $("[data-test-id=city] input").setValue(validUser.getCity());
-        $("[data-test-id=date] input").doubleClick().sendKeys(firstMeetingDate); // Заполнение даты
+        $("[data-test-id=date] input").doubleClick().sendKeys(firstMeetingDate);
         $("[data-test-id=name] input").setValue(validUser.getName());
         $("[data-test-id=phone] input").setValue(validUser.getPhone());
         $("[data-test-id=agreement]").click();
@@ -38,8 +38,8 @@ class DeliveryTest {
                 .shouldBe(visible, Duration.ofSeconds(15))
                 .shouldHave(text("Успешно! Встреча успешно запланирована на " + firstMeetingDate));
 
-        // Перепланирование
-        $("[data-test-id=date] input").doubleClick().sendKeys(secondMeetingDate); // Перезапись даты
+        
+        $("[data-test-id=date] input").doubleClick().sendKeys(secondMeetingDate); 
         $("button.button").click();
         $("[data-test-id=replan-notification]")
                 .shouldBe(visible)
