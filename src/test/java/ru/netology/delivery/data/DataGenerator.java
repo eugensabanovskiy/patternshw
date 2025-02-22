@@ -9,9 +9,6 @@ import java.util.Locale;
 import java.util.Random;
 
 public class DataGenerator {
-    private static final String[] CITIES = {"Москва", "Санкт-Петербург", "Казань", "Екатеринбург", "Самара", "Орёл", "Новосибирск"};
-    private static final Random random = new Random();
-
     private DataGenerator() {
     }
 
@@ -20,7 +17,8 @@ public class DataGenerator {
     }
 
     public static String generateCity(String locale) {
-        return CITIES[random.nextInt(CITIES.length)];
+        String[] cities = {"Москва", "Санкт-Петербург", "Казань", "Екатеринбург", "Владивосток"};
+        return cities[new Random().nextInt(cities.length)];
     }
 
     public static String generateName(String locale) {
@@ -38,7 +36,11 @@ public class DataGenerator {
         }
 
         public static UserInfo generateUser(String locale) {
-            return new UserInfo(generateCity(locale), generateName(locale), generatePhone(locale));
+            return new UserInfo(
+                    generateCity(locale),
+                    generateName(locale),
+                    generatePhone(locale)
+            );
         }
     }
 
