@@ -27,34 +27,26 @@ class DeliveryTest {
         var daysToAddForSecondMeeting = 7;
         var secondMeetingDate = DataGenerator.generateDate(daysToAddForSecondMeeting);
 
-        // Первое заполнение формы
+        // Первая запись
         $("[data-test-id=city] input").setValue(validUser.getCity());
-        $("[data-test-id=date] input").doubleClick().sendKeys(firstMeetingDate);
+        $("[data-test-id=date] input").doubleClick().sendKeys(firstMeetingDate); // Заполнение даты
         $("[data-test-id=name] input").setValue(validUser.getName());
         $("[data-test-id=phone] input").setValue(validUser.getPhone());
         $("[data-test-id=agreement]").click();
-        $(".button").click();
-
-        // Проверка первого уведомления
-        $("[data-test-id=success-notification] .notification__content")
+        $("button.button").click();
+        $("[data-test-id=success-notification]")
                 .shouldBe(visible, Duration.ofSeconds(15))
-                .shouldHave(text("Встреча успешно запланирована на " + firstMeetingDate));
+                .shouldHave(text("Успешно! Встреча успешно запланирована на " + firstMeetingDate));
 
-        // Повторное заполнение формы
-        $("[data-test-id=date] input").doubleClick().sendKeys(secondMeetingDate);
-        $(".button").click();
-
-        // Проверка уведомления о перепланировании
-        $("[data-test-id=replan-notification] .notification__content")
+        // Перепланирование
+        $("[data-test-id=date] input").doubleClick().sendKeys(secondMeetingDate); // Перезапись даты
+        $("button.button").click();
+        $("[data-test-id=replan-notification]")
                 .shouldBe(visible)
-                .shouldHave(text("У вас уже запланирована встреча на другую дату. Перепланировать?"));
-
-        // Подтверждение перепланирования
-        $("[data-test-id=replan-notification] button").click();
-
-        // Проверка обновленной даты
-        $("[data-test-id=success-notification] .notification__content")
+                .shouldHave(text("Необходимо подтверждение"));
+        $("[data-test-id=replan-notification] button.button").click();
+        $("[data-test-id=success-notification]")
                 .shouldBe(visible)
-                .shouldHave(text("Встреча успешно запланирована на " + secondMeetingDate));
+                .shouldHave(text("Успешно! Встреча успешно запланирована на " + secondMeetingDate));
     }
 }
